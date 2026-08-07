@@ -7,16 +7,16 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.components.charts import DARK_LAYOUT
-from data.storage import load_parquet
+from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Staking — ETH Cycle Engine", layout="wide", page_icon="⛏️")
 
 st.title("⛏️ Staking Model")
 
-results = load_parquet("latest_results")
+results = get_results()
 
 if results is None or "staked_eth" not in results:
-    st.warning("No backtest results found. Run `python example_backtest.py` first.")
+    st.error("Failed to load data. The app will auto-download on first load — refresh if this persists.")
     st.stop()
 
 staked = results["staked_eth"].dropna()

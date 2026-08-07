@@ -7,17 +7,17 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.components.charts import DARK_LAYOUT
-from data.storage import load_parquet
+from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Trade History — ETH Cycle Engine", layout="wide", page_icon="📋")
 
 st.title("📋 Trade History")
 
-results = load_parquet("latest_results")
-eth = load_parquet("eth_ohlcv_1d")
+results = get_results()
+eth = get_eth_data()
 
 if results is None or "equity" not in results:
-    st.warning("No backtest results found. Run `python example_backtest.py` first.")
+    st.error("Failed to load data. The app will auto-download on first load — refresh if this persists.")
     st.stop()
 
 equity = results["equity"].dropna()

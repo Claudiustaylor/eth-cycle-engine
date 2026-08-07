@@ -34,10 +34,10 @@ st.subheader("RSI Period Sensitivity")
 st.caption("How does Sharpe ratio change with different RSI lookback periods?")
 
 # We'll run a live mini-analysis if data is available
-from data.storage import load_parquet
+from dashboard.data_loader import get_eth_data, get_results
 
-eth = load_parquet("eth_ohlcv_1d")
-results = load_parquet("latest_results")
+eth = get_eth_data()
+results = get_results()
 
 if eth is not None and results is not None:
     returns = results["equity"].pct_change().dropna()

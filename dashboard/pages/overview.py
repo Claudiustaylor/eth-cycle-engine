@@ -2,21 +2,22 @@
 
 from __future__ import annotations
 
+import plotly.graph_objects as go
+import plotly.express as px
 import streamlit as st
 
 from dashboard.components.charts import price_chart_with_signals, rolling_volatility_chart
-from data.storage import load_parquet
+from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="ETH Cycle Engine", layout="wide", page_icon="📊")
 
 st.title("📊 Market Overview")
 
-eth = load_parquet("eth_ohlcv_1d")
-results = load_parquet("latest_results")
+eth = get_eth_data()
+results = get_results()
 
 if eth is None:
-    st.warning("No data found. Run `python example_backtest.py` first to download data and generate results.")
-    st.code("cd /Users/ct/eth-cycle-engine && source .venv/bin/activate && python example_backtest.py")
+    st.error("Failed to load ETH data. Check yfinance availability.")
     st.stop()
 
 # Key metrics row

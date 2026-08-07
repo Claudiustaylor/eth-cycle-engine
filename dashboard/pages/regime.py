@@ -10,17 +10,17 @@ from dashboard.components.charts import (
     regime_distribution_chart,
     regime_timeline_chart,
 )
-from data.storage import load_parquet
+from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Regime — ETH Cycle Engine", layout="wide", page_icon="🎯")
 
 st.title("🎯 Current Regime")
 
-results = load_parquet("latest_results")
-eth = load_parquet("eth_ohlcv_1d")
+results = get_results()
+eth = get_eth_data()
 
 if results is None or "regime" not in results:
-    st.warning("No regime results found. Run `python example_backtest.py` first.")
+    st.error("Failed to load data. The app will auto-download on first load — refresh if this persists.")
     st.stop()
 
 regimes = results["regime"].dropna()

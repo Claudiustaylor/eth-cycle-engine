@@ -8,16 +8,16 @@ from pathlib import Path
 import streamlit as st
 
 from dashboard.components.charts import signal_confidence_chart
-from data.storage import load_parquet
+from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Signals — ETH Cycle Engine", layout="wide", page_icon="📡")
 
 st.title("📡 Signal Score")
 
-results = load_parquet("latest_results")
+results = get_results()
 
 if results is None or "signal_score" not in results:
-    st.warning("No signal results found. Run `python example_backtest.py` first.")
+    st.error("Failed to load data. The app will auto-download on first load — refresh if this persists.")
     st.stop()
 
 scores = results["signal_score"].dropna()

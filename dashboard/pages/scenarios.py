@@ -7,16 +7,16 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.components.charts import DARK_LAYOUT
-from data.storage import load_parquet
+from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Scenarios — ETH Cycle Engine", layout="wide", page_icon="🔮")
 
 st.title("🔮 Scenario Simulator")
 
-eth = load_parquet("eth_ohlcv_1d")
+eth = get_eth_data()
 
 if eth is None:
-    st.warning("No data found. Run `python example_backtest.py` first.")
+    st.error("Failed to load data. The app will auto-download on first load — refresh if this persists.")
     st.stop()
 
 st.info("Scenario results are historical return resamples, NOT forecasts. Extreme repeats are labeled as non-expected.")
