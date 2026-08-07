@@ -1,0 +1,114 @@
+system:
+  starting_capital: 50000
+  data_start: "2017-11-01"
+  data_end: "2024-12-31"
+  random_seed: 42
+
+data:
+  sources:
+    eth_ohlcv: { enabled: true, provider: "yfinance" }
+    btc_ohlcv: { enabled: true, provider: "yfinance" }
+    macro: { enabled: true, provider: "yfinance" }
+    onchain: { enabled: false, provider: "none" }
+    derivatives: { enabled: false, provider: "none" }
+    staking: { enabled: false, provider: "config", default_yield: 0.03 }
+  cache:
+    max_age_hours: 24
+    path: "data/parquet/"
+
+features:
+  trend: { enabled: true, ema_periods: [20, 50, 100, 200] }
+  momentum: { enabled: true, rsi_period: 14, macd: [12, 26, 9] }
+  volatility: { enabled: true, atr_period: 14, rv_window: 21 }
+  drawdown: { enabled: true, cycle_window: 252 }
+  volume: { enabled: true, volume_ma: 20 }
+  market_structure: { enabled: true, structure_window: 20 }
+  derivatives: { enabled: false }
+  onchain: { enabled: false }
+  macro: { enabled: true }
+
+regimes:
+  method: "rule_based"
+  ml_method: null
+
+signals:
+  weights:
+    valuation: 0.20
+    trend: 0.15
+    momentum: 0.15
+    volatility: 0.10
+    derivatives: 0.10
+    onchain: 0.10
+    macro: 0.10
+    regime: 0.10
+  bands:
+    strong_sell: [0, 20]
+    reduce: [21, 40]
+    neutral: [41, 59]
+    accumulate: [60, 74]
+    strong_accumulate: [75, 89]
+    extreme_accumulate: [90, 100]
+
+position_sizing:
+  method: "tranche"
+  tranches:
+    buy: { 60: 0.10, 70: 0.15, 80: 0.25, 90: 0.30 }
+    sell: { 40: 0.20, 20: 0.40 }
+  drawdown_buying:
+    method: "increasing"
+    thresholds: [-0.10, -0.20, -0.30, -0.40, -0.50, -0.60, -0.70, -0.80]
+    require_regime_confirmation: true
+    require_trend_confirmation: false
+
+risk:
+  max_exposure: 0.95
+  min_cash_reserve: 0.05
+  max_drawdown_stop: 0.60
+  anomaly:
+    return_zscore_threshold: 4.0
+    vol_percentile_threshold: 95
+    volume_spike_multiple: 5.0
+    defensive_reduction: 0.50
+
+staking:
+  enabled: true
+  annual_yield: 0.03
+  validator_fee: 0.0
+  compounding_frequency: "daily"
+  pct_staked: 1.0
+  lockup_days: 0
+  slashing_risk: 0.0
+
+transaction_costs:
+  trading_fee_pct: 0.001
+  spread_pct: 0.0005
+  slippage_pct: 0.001
+  staking_fee_pct: 0.0
+  withdrawal_fee: 0.0
+
+tax:
+  enabled: false
+  mode: "none"
+  short_term_rate: 0.37
+  long_term_rate: 0.20
+  staking_income_rate: 0.37
+  long_term_threshold_days: 365
+
+backtest:
+  starting_capital: 50000
+  walk_forward: { train_years: 3, test_years: 1, method: "expanding" }
+
+monte_carlo:
+  n_simulations: 10000
+  horizon_days: 252
+  methods: ["block_bootstrap", "regime_conditioned", "student_t"]
+  seed: 42
+
+scenarios:
+  periods: { "4yr": 4, "5yr": 5, "10yr": 10 }
+  cases: ["severe_bear", "bear_base", "historical_cycle", "moderate_bull", "strong_bull", "extreme_repeat"]
+
+overfitting:
+  param_perturbation: 0.10
+  mc_permutations: 1000
+  significance_level: 0.05

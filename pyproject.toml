@@ -1,0 +1,53 @@
+[project]
+name = "eth-cycle-engine"
+version = "0.1.0"
+description = "ETH market-cycle backtesting and simulation system"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "pandas",
+  "numpy",
+  "scipy",
+  "pyyaml",
+  "pyarrow",
+  "yfinance",
+  "plotly",
+  "streamlit",
+  "scikit-learn",
+  "hmmlearn",
+  "statsmodels",
+  "arch",
+  "pytest",
+  "pytest-cov",
+  "matplotlib",
+  "numba",
+]
+
+[project.optional-dependencies]
+dev = ["ruff", "mypy", "pytest", "pytest-cov"]
+
+[project.scripts]
+eth-cycle = "dashboard.app:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = [
+  "data", "features", "regimes", "signals", "strategies", "risk", "staking",
+  "simulation", "backtesting", "metrics", "dashboard", "dashboard.pages",
+  "dashboard.components",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::FutureWarning"]
