@@ -14,8 +14,15 @@ def risk_on_risk_off(
     dollar = -dxy.pct_change(window)
     score = equity.rank(pct=True) * 50 + dollar.rank(pct=True) * 50
     if vix_proxy is not None:
+        # Lower VIX = risk-on; invert so high VIX reduces score
         score = score - vix_proxy.pct_change(window).rank(pct=True) * 20
     return score.clip(0, 100)
+
+
+def rate_direction_10y(treasury_10y: pd.Series, window: int = 20) -> pd.Series:
+    """Return trailing slope of 10-year treasury yields."""
+
+    return pd.to_numeric(treasury_10y, errors="coerce").diff(window)
 
 
 def rate_direction(treasury_2y: pd.Series, window: int = 20) -> pd.Series:

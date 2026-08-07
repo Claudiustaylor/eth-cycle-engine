@@ -82,12 +82,19 @@ class FeatureRegistry:
             out["failed_breakout"] = market_structure.failed_breakout_detection(prices, w)
         if cfg.get("macro", {}).get("enabled", True) and self.dataset.macro is not None:
             m = self.dataset.macro.reindex(out.index).ffill()
+            vix = m.get("vix", None)
             if {"sp500", "dxy"} <= set(m.columns):
-                out["risk_on_off"] = macro.risk_on_risk_off(m["sp500"], m["dxy"])
+                out["risk_on_off"] = macro.risk_on_risk_off(m["sp500"], m["dxy"], vix)
                 out["dollar_trend"] = macro.dollar_strength_trend(m["dxy"])
                 out["equity_trend"] = macro.equity_market_trend(m["sp500"])
             if "treasury_2y" in m:
                 out["rate_direction"] = macro.rate_direction(pd.to_numeric(m["treasury_2y"], errors="coerce"))
+            if "treasury_10y" in m and not pd.isna(m["treasury_10y"]).all():
+                out["rate_direction_10y"] = macro.rate_direction_10y(m["treasury_10y"])
+            if "gold" in m:
+                out["gold_trend"] = macro.dollar_strength_trend(m["gold"]).rename("gold_trend")  # reuse pct_change
+            if "nasdaq" in m:
+                out["nasdaq_trend"] = macro.equity_market_trend(m["nasdaq"])
         else:
             logger.info("Macro features skipped; macro data unavailable or disabled.")
         if cfg.get("derivatives", {}).get("enabled", False) and self.dataset.derivatives is None:

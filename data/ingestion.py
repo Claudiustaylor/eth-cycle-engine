@@ -45,7 +45,11 @@ class DataIngestion:
         try:
             import yfinance as yf
 
-            raw = yf.download(ticker, start=start, end=end, interval=interval, progress=False)
+            if interval == "1h":
+                # yfinance hourly: use period param (max 730d) instead of start/end
+                raw = yf.download(ticker, period="60d", interval="1h", progress=False)
+            else:
+                raw = yf.download(ticker, start=start, end=end, interval=interval, progress=False)
             if raw.empty:
                 logger.warning("No yfinance rows returned for %s", ticker)
                 return None
@@ -97,7 +101,16 @@ class DataIngestion:
         if cached is not None:
             return cached
         try:
-            tickers = {"irx": "^IRX", "sp500": "^GSPC", "nasdaq": "^IXIC", "dxy": "DX-Y.NYB"}
+            tickers = {
+                "irx": "^IRX",        # 13-week T-bill (proxy for fed funds)
+                "tnx": "^TNX",        # 10-year treasury yield
+                "fvx": "^FVX",        # 5-year treasury yield
+                "sp500": "^GSPC",     # S&P 500
+                "nasdaq": "^IXIC",    # Nasdaq
+                "dxy": "DX-Y.NYB",    # Dollar Index
+                "vix": "^VIX",        # Volatility Index
+                "gold": "GC=F",       # Gold futures (safe-haven proxy)
+            }
             frames: list[pd.Series] = []
             for name, ticker in tickers.items():
                 df = self._download_yfinance(ticker, start, end)
@@ -106,11 +119,11 @@ class DataIngestion:
             if not frames:
                 return None
             macro = pd.concat(frames, axis=1).ffill()
-            macro["treasury_2y"] = macro.get("irx")
-            macro["treasury_10y"] = pd.NA
-            macro["fed_funds_rate"] = pd.NA
-            macro["cpi_yoy"] = pd.NA
-            logger.warning("FRED API key not configured; fed funds and CPI are unavailable.")
+            macro["treasury_2y"] = macro.get("fvx")  # 5-yr as 2-yr proxy (closest free)
+            macro["treasury_10y"] = macro.get("tnx")
+            macro["fed_funds_rate"] = macro.get("irx")  # T-bill as fed funds proxy
+            macro["cpi_yoy"] = pd.NA  # Still requires FRED — no free proxy
+            logger.warning("FRED API key not configured; CPI year-over-year remains unavailable.")
             save_parquet(macro, "macro", self.base_path)
             return macro
         except Exception as exc:  # pragma: no cover
