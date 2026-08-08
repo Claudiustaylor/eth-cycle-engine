@@ -1,6 +1,9 @@
 """Monte Carlo simulation — what could the future look like?"""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import json
 from pathlib import Path
@@ -11,6 +14,9 @@ import streamlit as st
 from dashboard.components.charts import DARK_LAYOUT, monte_carlo_chart
 
 st.set_page_config(page_title="Monte Carlo — ETH Cycle Engine", layout="wide", page_icon="🎲")
+
+from dashboard.components.style import inject_luxury_css
+inject_luxury_css()
 
 st.title("🎲 Monte Carlo Simulation")
 st.markdown("*What are the possible futures for your portfolio? Instead of one prediction, we simulate thousands.*")
@@ -72,8 +78,8 @@ with col_right:
     st.markdown("#### Probability Summary")
     fig = go.Figure()
     targets = [
-        ("P(Loss)", mc_data.get("prob_loss", 0) * 100, "#ff3860"),
-        ("P(2x Return)", mc_data.get("prob_target", 0) * 100, "#00d68f"),
+        ("P(Loss)", mc_data.get("prob_loss", 0) * 100, "#ef4444"),
+        ("P(2x Return)", mc_data.get("prob_target", 0) * 100, "#22c55e"),
         ("P(50%+ DD)", mc_data.get("prob_drawdown_50", 0) * 100, "#f59e0b"),
     ]
     fig.add_trace(go.Bar(x=[t[0] for t in targets], y=[t[1] for t in targets], marker_color=[t[2] for t in targets]))

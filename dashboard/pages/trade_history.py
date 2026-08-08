@@ -1,6 +1,9 @@
 """Trade history — what did the strategy actually do?"""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import pandas as pd
 import plotly.express as px
@@ -8,6 +11,10 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.components.charts import DARK_LAYOUT
+from dashboard.components.style import inject_luxury_css
+
+inject_luxury_css()
+
 from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Trade History — ETH Cycle Engine", layout="wide", page_icon="📋")
@@ -57,7 +64,7 @@ st.markdown("### Daily Returns")
 st.caption("Each bar is one day. Green = portfolio went up, Red = portfolio went down. Taller bars = bigger moves. Look for patterns: are big red days clustered (crash periods) or scattered (normal volatility)?")
 
 fig = go.Figure()
-colors = ["#00d68f" if r > 0 else "#ff3860" for r in returns]
+colors = ["#22c55e" if r > 0 else "#ef4444" for r in returns]
 fig.add_trace(go.Bar(x=returns.index, y=returns * 100, marker_color=colors, name="Daily Return %"))
 fig.update_layout(title="Daily Strategy Returns (%)", yaxis_title="Return %", **DARK_LAYOUT)
 fig.update_layout(height=350)
@@ -71,7 +78,7 @@ col_left, col_right = st.columns(2)
 with col_left:
     st.markdown("#### Portfolio Value")
     fig_eq = go.Figure()
-    fig_eq.add_trace(go.Scatter(x=equity.index, y=equity, name="Portfolio Value", line={"color": "#8b5cf6", "width": 2}))
+    fig_eq.add_trace(go.Scatter(x=equity.index, y=equity, name="Portfolio Value", line={"color": "#e63946", "width": 2}))
     fig_eq.update_layout(title="Total Portfolio Value ($)", yaxis_title="USD", **DARK_LAYOUT)
     fig_eq.update_layout(height=350)
     st.plotly_chart(fig_eq, use_container_width=True)
@@ -80,7 +87,7 @@ with col_right:
         eth_h = results["eth_holdings"].dropna()
         st.markdown("#### ETH Holdings")
         fig_eth = go.Figure()
-        fig_eth.add_trace(go.Scatter(x=eth_h.index, y=eth_h, name="ETH Holdings", line={"color": "#3b82f6", "width": 2}))
+        fig_eth.add_trace(go.Scatter(x=eth_h.index, y=eth_h, name="ETH Holdings", line={"color": "#e63946", "width": 2}))
         fig_eth.update_layout(title="ETH Units Held", yaxis_title="ETH", **DARK_LAYOUT)
         fig_eth.update_layout(height=350)
         st.plotly_chart(fig_eth, use_container_width=True)
@@ -111,11 +118,11 @@ if len(monthly) > 0:
     fig_heat = px.imshow(
         pivot * 100,
         title="Monthly Returns (%) — Green = Profit, Red = Loss",
-        color_continuous_scale=["#ff3860", "#15151a", "#00d68f"],
+        color_continuous_scale=["#ef4444", "#121212", "#22c55e"],
         labels={"x": "Month", "y": "Year", "color": "Return %"},
         aspect="auto",
     )
-    fig_heat.update_layout(paper_bgcolor="#0a0a0b", plot_bgcolor="#15151a", font={"color": "#e0e0e8"}, height=350)
+    fig_heat.update_layout(paper_bgcolor="#0a0a0a", plot_bgcolor="#121212", font={"color": "#f5f5f5"}, height=350)
     st.plotly_chart(fig_heat, use_container_width=True)
     st.caption("💡 Look for rows (years) where most months are green — those were good years. Rows with lots of red = bad years. A consistent pattern across years suggests the strategy has a real, repeatable edge.")
 

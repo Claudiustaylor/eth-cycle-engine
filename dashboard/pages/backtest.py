@@ -1,6 +1,9 @@
 """Historical backtest — how would the strategy have performed?"""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import json
 from pathlib import Path
@@ -14,6 +17,10 @@ from dashboard.components.charts import (
     rolling_sharpe_chart,
     rolling_volatility_chart,
 )
+from dashboard.components.style import inject_luxury_css
+
+inject_luxury_css()
+
 from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Backtest — ETH Cycle Engine", layout="wide", page_icon="📜")

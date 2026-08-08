@@ -1,6 +1,9 @@
 """Parameter sensitivity — does the strategy survive small changes?"""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import json
 from pathlib import Path
@@ -10,6 +13,10 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.components.charts import DARK_LAYOUT
+from dashboard.components.style import inject_luxury_css
+
+inject_luxury_css()
+
 from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Sensitivity — ETH Cycle Engine", layout="wide", page_icon="🔧")
@@ -60,7 +67,7 @@ if eth is not None and results is not None:
         sr = (window_ret / window_std * np.sqrt(365)).mean()
         sharpes.append(sr)
 
-    fig = go.Figure(go.Scatter(x=rsi_periods, y=sharpes, mode="lines+markers", line={"color": "#8b5cf6", "width": 2}, marker={"size": 8}))
+    fig = go.Figure(go.Scatter(x=rsi_periods, y=sharpes, mode="lines+markers", line={"color": "#e63946", "width": 2}, marker={"size": 8}))
     fig.update_layout(title="Sharpe Ratio vs RSI Period", xaxis_title="RSI Period (days)", yaxis_title="Approximate Sharpe", **DARK_LAYOUT)
     fig.update_layout(height=350)
     st.plotly_chart(fig, use_container_width=True)
@@ -95,7 +102,7 @@ if eth is not None:
     fig2 = go.Figure(go.Bar(
         x=[f"{t*100:.0f}%" for t in thresholds],
         y=buy_counts,
-        marker_color="#3b82f6",
+        marker_color="#e63946",
     ))
     fig2.update_layout(title="Days Each Drawdown Threshold Is Triggered", xaxis_title="Drawdown Threshold (% below peak)", yaxis_title="Number of Days", **DARK_LAYOUT)
     fig2.update_layout(height=350)

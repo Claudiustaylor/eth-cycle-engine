@@ -1,12 +1,19 @@
 """Staking model — earn yield on your ETH."""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import plotly.graph_objects as go
 import streamlit as st
 import yaml
 
 from dashboard.components.charts import DARK_LAYOUT
+from dashboard.components.style import inject_luxury_css
+
+inject_luxury_css()
+
 from dashboard.data_loader import get_results
 
 st.set_page_config(page_title="Staking — ETH Cycle Engine", layout="wide", page_icon="⛏️")
@@ -62,7 +69,7 @@ if staked.sum() > 0:
     st.markdown("### Staked ETH Over Time")
     st.caption("This shows how much ETH was staked during the backtest. If the line is flat at zero, the strategy didn't accumulate enough ETH to stake.")
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=staked.index, y=staked, name="Staked ETH", line={"color": "#8b5cf6", "width": 2}))
+    fig.add_trace(go.Scatter(x=staked.index, y=staked, name="Staked ETH", line={"color": "#e63946", "width": 2}))
     fig.update_layout(title="Staked ETH Over Time", yaxis_title="ETH Units", **DARK_LAYOUT)
     fig.update_layout(height=400)
     st.plotly_chart(fig, use_container_width=True)
@@ -108,8 +115,8 @@ col_r2.metric("Final ETH (after staking)", f"{final_eth:.4f}", help=f"Your ETH a
 col_r3.metric("Total Staking Rewards", f"{total_rewards:.4f} ETH", help="How much extra ETH you earned from staking. This is in ETH units, not USD.")
 
 fig_growth = go.Figure()
-fig_growth.add_trace(go.Scatter(x=list(range(len(eth_history))), y=eth_history, name="ETH with Staking", line={"color": "#8b5cf6", "width": 2}))
-fig_growth.add_hline(y=eth_amount, line_color="#6b7280", line_dash="dash", annotation_text="Without staking")
+fig_growth.add_trace(go.Scatter(x=list(range(len(eth_history))), y=eth_history, name="ETH with Staking", line={"color": "#e63946", "width": 2}))
+fig_growth.add_hline(y=eth_amount, line_color="#666666", line_dash="dash", annotation_text="Without staking")
 fig_growth.update_layout(title=f"ETH Growth with {annual_yield}% Staking Yield Over {years_held} Years", xaxis_title="Days", yaxis_title="ETH", **DARK_LAYOUT)
 fig_growth.update_layout(height=350)
 st.plotly_chart(fig_growth, use_container_width=True)

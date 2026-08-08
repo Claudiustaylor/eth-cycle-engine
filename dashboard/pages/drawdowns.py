@@ -1,11 +1,18 @@
 """Drawdown analysis — how bad did it get and how long to recover?"""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import plotly.express as px
 import streamlit as st
 
 from dashboard.components.charts import drawdown_chart
+from dashboard.components.style import inject_luxury_css
+
+inject_luxury_css()
+
 from dashboard.data_loader import get_eth_data, get_results
 
 st.set_page_config(page_title="Drawdowns — ETH Cycle Engine", layout="wide", page_icon="📉")
@@ -64,7 +71,7 @@ with col_right:
     st.subheader("Drawdown Distribution")
     st.caption("How often was the portfolio in shallow vs deep drawdown?")
     fig = px.histogram(dd[dd < 0] * 100, nbins=50, title="Drawdown Depth Frequency", labels={"value": "Drawdown %"})
-    fig.update_layout(paper_bgcolor="#0a0a0b", plot_bgcolor="#15151a", font={"color": "#e0e0e8"}, height=350, margin={"l": 10, "r": 10, "t": 30, "b": 10})
+    fig.update_layout(paper_bgcolor="#0a0a0a", plot_bgcolor="#121212", font={"color": "#f5f5f5"}, height=350, margin={"l": 10, "r": 10, "t": 30, "b": 10})
     st.plotly_chart(fig, use_container_width=True)
 
 # ── ETH comparison ──

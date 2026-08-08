@@ -9,18 +9,18 @@ def main() -> None:
     """Launch Streamlit multi-page dashboard."""
 
     pages = [
-        st.Page("dashboard/pages/help.py", title="Help & Glossary", icon="📖"),
-        st.Page("dashboard/pages/overview.py", title="Market Overview", icon="📊"),
-        st.Page("dashboard/pages/regime.py", title="Current Regime", icon="🎯"),
-        st.Page("dashboard/pages/signals.py", title="Signal Score", icon="📡"),
-        st.Page("dashboard/pages/backtest.py", title="Historical Backtest", icon="📜"),
-        st.Page("dashboard/pages/drawdowns.py", title="Drawdown Analysis", icon="📉"),
-        st.Page("dashboard/pages/comparison.py", title="Strategy Comparison", icon="⚖️"),
-        st.Page("dashboard/pages/monte_carlo.py", title="Monte Carlo", icon="🎲"),
-        st.Page("dashboard/pages/staking.py", title="Staking Model", icon="⛏️"),
-        st.Page("dashboard/pages/scenarios.py", title="Scenario Simulator", icon="🔮"),
-        st.Page("dashboard/pages/sensitivity.py", title="Parameter Sensitivity", icon="🔧"),
-        st.Page("dashboard/pages/trade_history.py", title="Trade History", icon="📋"),
+        st.Page("pages/help.py", title="Help & Glossary", icon="📖"),
+        st.Page("pages/overview.py", title="Market Overview", icon="📊"),
+        st.Page("pages/regime.py", title="Current Regime", icon="🎯"),
+        st.Page("pages/signals.py", title="Signal Score", icon="📡"),
+        st.Page("pages/backtest.py", title="Historical Backtest", icon="📜"),
+        st.Page("pages/drawdowns.py", title="Drawdown Analysis", icon="📉"),
+        st.Page("pages/comparison.py", title="Strategy Comparison", icon="⚖️"),
+        st.Page("pages/monte_carlo.py", title="Monte Carlo", icon="🎲"),
+        st.Page("pages/staking.py", title="Staking Model", icon="⛏️"),
+        st.Page("pages/scenarios.py", title="Scenario Simulator", icon="🔮"),
+        st.Page("pages/sensitivity.py", title="Parameter Sensitivity", icon="🔧"),
+        st.Page("pages/trade_history.py", title="Trade History", icon="📋"),
     ]
     pg = st.navigation(pages)
     pg.run()

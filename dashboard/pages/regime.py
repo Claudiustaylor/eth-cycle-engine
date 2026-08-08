@@ -1,6 +1,9 @@
 """Current regime — what phase of the market cycle are we in?"""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import pandas as pd
 import streamlit as st
@@ -10,6 +13,10 @@ from dashboard.components.charts import (
     regime_distribution_chart,
     regime_timeline_chart,
 )
+from dashboard.components.style import inject_luxury_css
+
+inject_luxury_css()
+
 from dashboard.data_loader import get_results
 
 st.set_page_config(page_title="Regime — ETH Cycle Engine", layout="wide", page_icon="🎯")
@@ -50,7 +57,7 @@ with st.expander("📖 What is a market regime?"):
 
 # ── Current regime display ──
 st.markdown("### Current Status")
-latest_color = REGIME_COLORS.get(latest_regime, "#6b7280")
+latest_color = REGIME_COLORS.get(latest_regime, "#666666")
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Current Regime", latest_regime.upper().replace("_", " "), help="The market phase classification for the most recent day in our data.")

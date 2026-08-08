@@ -1,13 +1,49 @@
 """Help & Glossary — explains every term used in the dashboard."""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import streamlit as st
 
 st.set_page_config(page_title="Help & Glossary", layout="wide", page_icon="📖")
 
+from dashboard.components.style import inject_luxury_css
+inject_luxury_css()
+
 st.title("📖 Help & Glossary")
 st.markdown("New to crypto or quantitative trading? This page explains every term used throughout the dashboard in plain English.")
+
+# Luxury brand header
+st.markdown("""
+<div style='
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 24px 32px;
+    margin: 16px 0 8px 0;
+'>
+    <h1 style='
+        color: #ffffff;
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 0;
+    '>ETH CYCLE ENGINE</h1>
+    <p style='
+        color: #e63946;
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        margin: 4px 0 0 0;
+        text-transform: uppercase;
+    '>Market-Cycle Backtesting & Simulation</p>
+    <p style='color: #777777; font-size: 0.85rem; margin: 8px 0 0 0;'>
+    Research whether observable market conditions create a repeatable statistical edge — not a price prediction toy.
+    </p>
+</div>
+""", unsafe_allow_html=True)
 
 st.divider()
 

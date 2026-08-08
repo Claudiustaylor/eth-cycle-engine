@@ -1,6 +1,9 @@
 """Scenario simulator — what could happen in different market conditions?"""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import numpy as np
 import plotly.express as px
@@ -8,6 +11,10 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from dashboard.components.charts import DARK_LAYOUT
+from dashboard.components.style import inject_luxury_css
+
+inject_luxury_css()
+
 from dashboard.data_loader import get_eth_data
 
 st.set_page_config(page_title="Scenarios — ETH Cycle Engine", layout="wide", page_icon="🔮")
@@ -104,8 +111,8 @@ col5m.metric("Best 10% (P90)", f"{np.percentile(finals, 90):.2f}x", help="1-in-1
 st.markdown("### Distribution of Outcomes")
 st.caption("How are the simulated final portfolio values spread out? The red dashed line at 1x = breakeven. Everything left of it = losing money.")
 fig = px.histogram(finals, nbins=50, title=f"Final Portfolio Multiple Distribution — {scenario_type}", labels={"value": "Multiple (1x = breakeven)"})
-fig.update_layout(paper_bgcolor="#0a0a0b", plot_bgcolor="#15151a", font={"color": "#e0e0e8"}, height=350)
-fig.add_vline(x=1.0, line_color="#ff3860", line_dash="dash", annotation_text="Breakeven")
+fig.update_layout(paper_bgcolor="#0a0a0a", plot_bgcolor="#121212", font={"color": "#f5f5f5"}, height=350)
+fig.add_vline(x=1.0, line_color="#ef4444", line_dash="dash", annotation_text="Breakeven")
 st.plotly_chart(fig, use_container_width=True)
 
 # ── Sample paths ──
@@ -115,7 +122,7 @@ sample_n = min(50, n)
 fig_paths = go.Figure()
 for i in range(sample_n):
     fig_paths.add_trace(go.Scatter(x=list(range(h)), y=paths[i], mode="lines", line={"width": 0.5}, opacity=0.3, showlegend=False))
-fig_paths.add_hline(y=1.0, line_color="#6b7280", line_dash="dash", annotation_text="Breakeven")
+fig_paths.add_hline(y=1.0, line_color="#666666", line_dash="dash", annotation_text="Breakeven")
 fig_paths.update_layout(title=f"{sample_n} Random Simulation Paths", xaxis_title="Days", yaxis_title="Portfolio Multiple (1x = start)", **DARK_LAYOUT)
 fig_paths.update_layout(height=400)
 st.plotly_chart(fig_paths, use_container_width=True)

@@ -1,6 +1,9 @@
 """Signal score — the system's buy/sell confidence level."""
 
 from __future__ import annotations
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
 import json
 from pathlib import Path
@@ -9,6 +12,10 @@ import plotly.express as px
 import streamlit as st
 
 from dashboard.components.charts import signal_confidence_chart
+from dashboard.components.style import inject_luxury_css
+
+inject_luxury_css()
+
 from dashboard.data_loader import get_results
 
 st.set_page_config(page_title="Signals — ETH Cycle Engine", layout="wide", page_icon="📡")
@@ -56,17 +63,17 @@ with st.expander("📖 How does the signal score work?"):
 st.markdown("### Current Signal")
 
 if latest_score <= 20:
-    band, action, color = "Strong Sell", "Extreme caution — reduce exposure", "#ff3860"
+    band, action, color = "Strong Sell", "Extreme caution — reduce exposure", "#ef4444"
 elif latest_score <= 40:
-    band, action, color = "Reduce", "Reduce exposure", "#ff3860"
+    band, action, color = "Reduce", "Reduce exposure", "#ef4444"
 elif latest_score <= 59:
-    band, action, color = "Neutral", "Hold — no clear edge", "#6b7280"
+    band, action, color = "Neutral", "Hold — no clear edge", "#666666"
 elif latest_score <= 74:
-    band, action, color = "Accumulate", "Start buying in small amounts", "#00d68f"
+    band, action, color = "Accumulate", "Start buying in small amounts", "#22c55e"
 elif latest_score <= 89:
-    band, action, color = "Strong Accumulate", "Buy more aggressively", "#00d68f"
+    band, action, color = "Strong Accumulate", "Buy more aggressively", "#22c55e"
 else:
-    band, action, color = "Extreme Accumulate", "Rare opportunity — deploy capital", "#00d68f"
+    band, action, color = "Extreme Accumulate", "Rare opportunity — deploy capital", "#22c55e"
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Latest Score", f"{latest_score:.0f}/100", help="0 = extreme sell signal, 100 = extreme buy signal, 50 = neutral")
@@ -91,7 +98,7 @@ st.caption("How often does the signal reach each zone? If the signal is almost a
 col_left, col_right = st.columns(2)
 with col_left:
     fig = px.histogram(scores, nbins=50, title="How Often Each Score Occurs", labels={"value": "Score"})
-    fig.update_layout(paper_bgcolor="#0a0a0b", plot_bgcolor="#15151a", font={"color": "#e0e0e8"}, height=300, margin={"l": 10, "r": 10, "t": 30, "b": 10})
+    fig.update_layout(paper_bgcolor="#0a0a0a", plot_bgcolor="#121212", font={"color": "#f5f5f5"}, height=300, margin={"l": 10, "r": 10, "t": 30, "b": 10})
     st.plotly_chart(fig, use_container_width=True)
 with col_right:
     st.markdown("#### Statistics")
