@@ -83,7 +83,7 @@ with col_right:
         ("P(50%+ DD)", mc_data.get("prob_drawdown_50", 0) * 100, "#f59e0b"),
     ]
     fig.add_trace(go.Bar(x=[t[0] for t in targets], y=[t[1] for t in targets], marker_color=[t[2] for t in targets]))
-    fig.update_layout(title="Probability of Key Outcomes (%)", **DARK_LAYOUT)
+    fig.update_layout(title="Probability of Key Outcomes (%)", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
     fig.update_layout(height=350)
     st.plotly_chart(fig, use_container_width=True)
 

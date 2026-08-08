@@ -10,6 +10,7 @@ def main() -> None:
 
     pages = [
         st.Page("pages/help.py", title="Help & Glossary", icon="📖"),
+        st.Page("pages/slifer_test.py", title="Slifer Test", icon="💎"),
         st.Page("pages/overview.py", title="Market Overview", icon="📊"),
         st.Page("pages/regime.py", title="Current Regime", icon="🎯"),
         st.Page("pages/signals.py", title="Signal Score", icon="📡"),

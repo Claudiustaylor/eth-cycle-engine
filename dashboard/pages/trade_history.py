@@ -66,7 +66,7 @@ st.caption("Each bar is one day. Green = portfolio went up, Red = portfolio went
 fig = go.Figure()
 colors = ["#22c55e" if r > 0 else "#ef4444" for r in returns]
 fig.add_trace(go.Bar(x=returns.index, y=returns * 100, marker_color=colors, name="Daily Return %"))
-fig.update_layout(title="Daily Strategy Returns (%)", yaxis_title="Return %", **DARK_LAYOUT)
+fig.update_layout(title="Daily Strategy Returns (%)", yaxis_title="Return %", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
 fig.update_layout(height=350)
 st.plotly_chart(fig, use_container_width=True)
 
@@ -79,7 +79,7 @@ with col_left:
     st.markdown("#### Portfolio Value")
     fig_eq = go.Figure()
     fig_eq.add_trace(go.Scatter(x=equity.index, y=equity, name="Portfolio Value", line={"color": "#e63946", "width": 2}))
-    fig_eq.update_layout(title="Total Portfolio Value ($)", yaxis_title="USD", **DARK_LAYOUT)
+    fig_eq.update_layout(title="Total Portfolio Value ($)", yaxis_title="USD", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
     fig_eq.update_layout(height=350)
     st.plotly_chart(fig_eq, use_container_width=True)
 with col_right:
@@ -88,7 +88,7 @@ with col_right:
         st.markdown("#### ETH Holdings")
         fig_eth = go.Figure()
         fig_eth.add_trace(go.Scatter(x=eth_h.index, y=eth_h, name="ETH Holdings", line={"color": "#e63946", "width": 2}))
-        fig_eth.update_layout(title="ETH Units Held", yaxis_title="ETH", **DARK_LAYOUT)
+        fig_eth.update_layout(title="ETH Units Held", yaxis_title="ETH", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
         fig_eth.update_layout(height=350)
         st.plotly_chart(fig_eth, use_container_width=True)
 
@@ -99,7 +99,7 @@ if "cash" in results:
     st.caption("How much cash you're holding. High cash = the strategy is cautious. Low cash = the strategy is fully invested.")
     fig_cash = go.Figure()
     fig_cash.add_trace(go.Scatter(x=cash.index, y=cash, name="Cash", line={"color": "#f59e0b", "width": 1.5}))
-    fig_cash.update_layout(title="Cash Balance ($)", yaxis_title="USD", **DARK_LAYOUT)
+    fig_cash.update_layout(title="Cash Balance ($)", yaxis_title="USD", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
     fig_cash.update_layout(height=300)
     st.plotly_chart(fig_cash, use_container_width=True)
 

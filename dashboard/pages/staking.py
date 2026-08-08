@@ -70,7 +70,7 @@ if staked.sum() > 0:
     st.caption("This shows how much ETH was staked during the backtest. If the line is flat at zero, the strategy didn't accumulate enough ETH to stake.")
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=staked.index, y=staked, name="Staked ETH", line={"color": "#e63946", "width": 2}))
-    fig.update_layout(title="Staked ETH Over Time", yaxis_title="ETH Units", **DARK_LAYOUT)
+    fig.update_layout(title="Staked ETH Over Time", yaxis_title="ETH Units", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
     fig.update_layout(height=400)
     st.plotly_chart(fig, use_container_width=True)
 

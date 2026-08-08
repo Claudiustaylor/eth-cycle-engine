@@ -90,7 +90,7 @@ with col2:
     names = list(all_strategies.keys())
     cagr_vals = [all_strategies[n].get("cagr", 0) for n in names]
     fig = go.Figure(go.Bar(x=names, y=[c * 100 for c in cagr_vals], marker_color="#e63946"))
-    fig.update_layout(title="CAGR (%)", **DARK_LAYOUT)
+    fig.update_layout(title="CAGR (%)", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
     fig.update_layout(height=350)
     st.plotly_chart(fig, use_container_width=True)
 
@@ -98,7 +98,7 @@ st.markdown("#### Max Drawdown (lower magnitude = better)")
 st.caption("The worst peak-to-trough decline. A smaller bar means less pain. This is arguably the most important metric for real-world investing.")
 dd_vals = [all_strategies[n].get("max_drawdown", 0) * 100 for n in names]
 fig_dd = go.Figure(go.Bar(x=names, y=dd_vals, marker_color="#ef4444"))
-fig_dd.update_layout(title="Max Drawdown (%)", **DARK_LAYOUT)
+fig_dd.update_layout(title="Max Drawdown (%)", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
 fig_dd.update_layout(height=350)
 st.plotly_chart(fig_dd, use_container_width=True)
 
@@ -106,6 +106,6 @@ st.markdown("#### Final Portfolio Value (higher = better)")
 st.caption(f"What your $50,000 became. Best performer: **${max(all_strategies[n].get('final_portfolio_value', 0) for n in names):,.0f}**")
 final_vals = [all_strategies[n].get("final_portfolio_value", 0) for n in names]
 fig_fv = go.Figure(go.Bar(x=names, y=final_vals, marker_color="#22c55e"))
-fig_fv.update_layout(title="Final Value ($)", **DARK_LAYOUT)
+fig_fv.update_layout(title="Final Value ($)", **{k: v for k, v in DARK_LAYOUT.items() if k != "title"})
 fig_fv.update_layout(height=350)
 st.plotly_chart(fig_fv, use_container_width=True)
