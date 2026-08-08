@@ -1,18 +1,20 @@
-"""Signal score — confidence, sub-scores, explainability."""
+"""Signal score — the system's buy/sell confidence level."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
+import plotly.express as px
 import streamlit as st
 
 from dashboard.components.charts import signal_confidence_chart
-from dashboard.data_loader import get_eth_data, get_results
+from dashboard.data_loader import get_results
 
 st.set_page_config(page_title="Signals — ETH Cycle Engine", layout="wide", page_icon="📡")
 
 st.title("📡 Signal Score")
+st.markdown("*The system's confidence level for buying or selling ETH right now.*")
 
 results = get_results()
 
@@ -23,59 +25,92 @@ if results is None or "signal_score" not in results:
 scores = results["signal_score"].dropna()
 latest_score = float(scores.iloc[-1])
 
-# Determine band
+# ── Explanation ──
+with st.expander("📖 How does the signal score work?"):
+    st.markdown("""
+    The signal score is a **0-100 confidence level** that combines 8 different analyses into one number.
+
+    **It is NOT a simple buy/sell signal.** It's a confidence meter:
+
+    | Score | Label | What It Means |
+    |-------|-------|-------------|
+    | 0-20 | 🔴 Strong Sell | Multiple warning signs — reduce exposure |
+    | 21-40 | 🟠 Reduce | Bearish signals building up |
+    | 41-59 | ⚪ Neutral | No clear edge — hold and wait |
+    | 60-74 | 🟡 Accumulate | Conditions becoming favorable — start buying small amounts |
+    | 75-89 | 🟢 Strong Accumulate | Strong buying conditions — buy more |
+    | 90-100 | 🟣 Extreme Accumulate | Rare opportunity — multiple signals aligned |
+
+    **The 8 sub-scores that make up the total:**
+    - **Valuation (20%)**: Is ETH cheap or expensive vs its history? Deep drawdowns = cheaper.
+    - **Trend (15%)**: Are moving averages pointing up or down?
+    - **Momentum (15%)**: Is RSI oversold (buying opportunity) or overbought?
+    - **Volatility (10%)**: High volatility with contraction often signals panic → opportunity.
+    - **Derivatives (10%)**: Funding rates & liquidations (needs paid data — currently neutral).
+    - **On-Chain (10%)**: Exchange flows & MVRV (needs paid data — currently neutral).
+    - **Macro (10%)**: Stock market trend, dollar strength, interest rates.
+    - **Regime (10%)**: What market phase are we in?
+    """)
+
+# ── Current score ──
+st.markdown("### Current Signal")
+
 if latest_score <= 20:
-    band, action = "Strong Sell", "Extreme caution"
-    color = "#ff3860"
+    band, action, color = "Strong Sell", "Extreme caution — reduce exposure", "#ff3860"
 elif latest_score <= 40:
-    band, action = "Reduce", "Reduce exposure"
-    color = "#ff3860"
+    band, action, color = "Reduce", "Reduce exposure", "#ff3860"
 elif latest_score <= 59:
-    band, action = "Neutral", "Neutral"
-    color = "#6b7280"
+    band, action, color = "Neutral", "Hold — no clear edge", "#6b7280"
 elif latest_score <= 74:
-    band, action = "Accumulate", "Initial accumulation"
-    color = "#00d68f"
+    band, action, color = "Accumulate", "Start buying in small amounts", "#00d68f"
 elif latest_score <= 89:
-    band, action = "Strong Accumulate", "Strong accumulation"
-    color = "#00d68f"
+    band, action, color = "Strong Accumulate", "Buy more aggressively", "#00d68f"
 else:
-    band, action = "Extreme Accumulate", "Extreme accumulation opportunity"
-    color = "#00d68f"
+    band, action, color = "Extreme Accumulate", "Rare opportunity — deploy capital", "#00d68f"
 
 col1, col2, col3 = st.columns(3)
-col1.metric("Latest Score", f"{latest_score:.0f}/100")
+col1.metric("Latest Score", f"{latest_score:.0f}/100", help="0 = extreme sell signal, 100 = extreme buy signal, 50 = neutral")
 col2.metric("Signal Band", band)
 col3.metric("Recommended Action", action)
 
+# Progress bar visualization
+st.markdown("#### Score Position")
+st.progress(min(latest_score, 100) / 100, text=f"{latest_score:.0f}/100 — {band}")
+
 st.divider()
 
+# ── Score over time ──
+st.markdown("### Signal Score Over Time")
+st.caption("The colored bands show the confidence zones. Watch how the score moves between zones during bull and bear markets. A good strategy accumulates when the score is high (green zones) and trims when it's low (red zones).")
 st.plotly_chart(signal_confidence_chart(scores), use_container_width=True)
 
-# Score distribution
+# ── Score distribution ──
+st.markdown("### Score Distribution")
+st.caption("How often does the signal reach each zone? If the signal is almost always 'neutral,' the strategy isn't finding many opportunities. If it's frequently in 'extreme accumulate,' it may be too aggressive.")
+
 col_left, col_right = st.columns(2)
 with col_left:
-    st.subheader("Score Distribution")
-    import plotly.express as px
-    fig = px.histogram(scores, nbins=50, title="Signal Score Distribution", labels={"value": "Score"})
+    fig = px.histogram(scores, nbins=50, title="How Often Each Score Occurs", labels={"value": "Score"})
     fig.update_layout(paper_bgcolor="#0a0a0b", plot_bgcolor="#15151a", font={"color": "#e0e0e8"}, height=300, margin={"l": 10, "r": 10, "t": 30, "b": 10})
     st.plotly_chart(fig, use_container_width=True)
 with col_right:
-    st.subheader("Score Statistics")
-    st.metric("Mean Score", f"{scores.mean():.1f}")
+    st.markdown("#### Statistics")
+    st.metric("Average Score", f"{scores.mean():.1f}", help="If this is around 50, the system is balanced. Well above 50 = bias toward buying.")
     st.metric("Median Score", f"{scores.median():.1f}")
-    st.metric("Std Dev", f"{scores.std():.1f}")
-    st.metric("Time in Accumulate Zone (>60)", f"{(scores > 60).mean() * 100:.1f}%")
-    st.metric("Time in Sell Zone (<40)", f"{(scores < 40).mean() * 100:.1f}%")
+    st.metric("Std Deviation", f"{scores.std():.1f}", help="How much the score varies. High = the system adapts a lot. Low = it's fairly constant.")
+    st.metric("Time in Buy Zone (>60)", f"{(scores > 60).mean() * 100:.1f}%", help="% of days the system said 'accumulate' or higher.")
+    st.metric("Time in Sell Zone (<40)", f"{(scores < 40).mean() * 100:.1f}%", help="% of days the system said 'reduce' or lower.")
 
-# Latest signal explanation
+# ── Latest signal explanation ──
 st.divider()
-st.subheader("Latest Signal Explanation")
+st.markdown("### Latest Signal Explanation")
+st.caption("Every signal the system generates comes with a full breakdown of WHY it reached that score.")
 
 report_path = Path("output/report.json")
 if report_path.exists():
     report = json.loads(report_path.read_text())
     latest_signal = report.get("latest_signal", "")
     st.code(latest_signal, language="text")
+    st.caption("💡 Each line references a specific data point. If derivatives or on-chain say 'neutral 50/100,' that means we don't have paid data for those — the system defaults to neutral instead of guessing.")
 else:
-    st.info("Run `python example_backtest.py` to generate the latest signal explanation.")
+    st.info("Signal explanation will appear here after data loads.")

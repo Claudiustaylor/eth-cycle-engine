@@ -9,6 +9,7 @@ def main() -> None:
     """Launch Streamlit multi-page dashboard."""
 
     pages = [
+        st.Page("dashboard/pages/help.py", title="Help & Glossary", icon="📖"),
         st.Page("dashboard/pages/overview.py", title="Market Overview", icon="📊"),
         st.Page("dashboard/pages/regime.py", title="Current Regime", icon="🎯"),
         st.Page("dashboard/pages/signals.py", title="Signal Score", icon="📡"),
